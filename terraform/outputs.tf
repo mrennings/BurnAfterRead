@@ -11,5 +11,9 @@ output "Policy_ARN" {
 }
 
 output "APIGW-Endpoint" {
-  value = aws_apigatewayv2_api.apigw.api_endpoint
+  value = "${aws_apigatewayv2_api.bargw.api_endpoint}/${aws_apigatewayv2_stage.prod_stage.name}/"
+}
+
+output "Function_name" {
+  value = aws_lambda_function.BaR.arn
 }

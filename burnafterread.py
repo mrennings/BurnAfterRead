@@ -1,15 +1,18 @@
 import boto3
 import json
 import uuid
+import os
 
-BASEURL = 'https://pzsj5pym2h.execute-api.eu-central-1.amazonaws.com/'
-TABLENAME = 'ue113b2'
+BASEURL = os.environ["BASEURL"]
+TABLENAME = os.environ["TBLNAME"]
 
 dynamo = boto3.client('dynamodb')
 
 
-def lambda_handler(event, context):
+#def lambda_handler(event, context):
+def burn_after_read(event, context):
 
+    print(f"BASEURL: {BASEURL}; TABLENAME: {TABLENAME}")
     operation = event['requestContext']['http']['method']
     
     if operation == 'GET':
@@ -45,7 +48,8 @@ def lambda_handler(event, context):
         
     
     elif operation == 'POST':
-        msg = json.loads(event['body'])
+        # msg = json.loads(event['body'])
+        msg = event['body']
         id = str(uuid.uuid4()).replace('-', '')
 
         dynamo.put_item(
@@ -54,15 +58,15 @@ def lambda_handler(event, context):
                 'msg': { 'S': msg },
             },
             ReturnConsumedCapacity='TOTAL',
-            TableName = 'ue113b2'
+            TableName = TABLENAME
         )
         
-        url = f"{BASEURL}{id}".replace(' ', '')
-        body = f'Zum (einmaligen) Lesen der Nachricht bitte folgende URL verwenden: {BASEURL}{id}'
+        url = f"{BASEURL}/{id}".replace(' ', '')
+        body = f'Zum (einmaligen) Lesen der Nachricht bitte folgende URL verwenden: {url}'
     
         return {
             'statusCode': 201,
-            'body': f'Zum (einmaligen) Lesen der Nachricht bitte folgende URL verwenden: {BASEURL}{id}'
+            'body': body
         }
 
     else:

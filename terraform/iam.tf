@@ -36,7 +36,7 @@ resource "aws_iam_policy" "UseDDB" {
 }
 
 resource "aws_iam_policy" "Logging" {
-  name = "wochenprojekt_allow_logging"
+  name = "Allow_logging"
   path = "/"
   policy = jsonencode({
     "Version": "2012-10-17",
